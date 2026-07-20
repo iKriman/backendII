@@ -1,0 +1,93 @@
+openapi: 3.0.3
+info:
+  title: MiniMarket Plus API
+  version: 1.0.0
+  description: API EFT para autenticacion, inventario, pedidos, promociones y reportes.
+servers:
+  - url: http://localhost:8080
+security:
+  - bearer-jwt: []
+components:
+  securitySchemes:
+    bearer-jwt:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+paths:
+  /api/auth/login:
+    post:
+      summary: Autentica usuario y emite JWT.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            example:
+              username: admin
+              password: admin123
+      responses:
+        "200":
+          description: Token emitido con roles.
+  /api/products:
+    get:
+      summary: Lista productos disponibles por sucursal con enlaces HATEOAS.
+      security: []
+      responses:
+        "200":
+          description: Coleccion de productos.
+  /api/inventory/products:
+    post:
+      summary: Crea producto de inventario.
+      responses:
+        "201":
+          description: Producto creado.
+        "403":
+          description: Requiere rol ADMIN.
+  /api/inventory/products/{id}/stock:
+    patch:
+      summary: Actualiza stock y genera orden de compra si llega al minimo.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Stock actualizado.
+  /api/inventory/purchase-orders:
+    get:
+      summary: Lista ordenes de compra generadas automaticamente.
+      responses:
+        "200":
+          description: Ordenes generadas.
+  /api/orders:
+    post:
+      summary: Crea pedido en linea para retiro o despacho.
+      responses:
+        "201":
+          description: Pedido confirmado.
+    get:
+      summary: Lista pedidos.
+      responses:
+        "200":
+          description: Pedidos registrados.
+  /api/promotions:
+    get:
+      summary: Lista ofertas y promociones centralizadas.
+      security: []
+      responses:
+        "200":
+          description: Promociones vigentes.
+  /api/reports/rotation:
+    get:
+      summary: Reporte de productos mas y menos vendidos.
+      responses:
+        "200":
+          description: Reporte de rotacion.
+  /api/reports/sales:
+    get:
+      summary: Reporte consolidado de ventas.
+      responses:
+        "200":
+          description: Resumen de ventas.
